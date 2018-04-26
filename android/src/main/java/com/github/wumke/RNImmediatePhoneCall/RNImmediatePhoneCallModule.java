@@ -19,6 +19,24 @@ public class RNImmediatePhoneCallModule extends ReactContextBaseJavaModule {
 
     ReactApplicationContext reactContext;
     AlarmManager alarmManager;
+    private final static String simSlotName[] = {
+            "extra_asus_dial_use_dualsim",
+            "com.android.phone.extra.slot",
+            "slot",
+            "simslot",
+            "sim_slot",
+            "subscription",
+            "Subscription",
+            "phone",
+            "com.android.phone.DialingMode",
+            "simSlot",
+            "slot_id",
+            "simId",
+            "simnum",
+            "phone_type",
+            "slotId",
+            "slotIdx"
+    };
 
     public RNImmediatePhoneCallModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -32,11 +50,15 @@ public class RNImmediatePhoneCallModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void immediatePhoneCall(String number) {
+    public void immediatePhoneCall(String number, int slot) {
         number = Uri.encode(number);
         String url = "tel:" + number;
         Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse(url));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra("com.android.phone.force.slot", true);
+        for (String s : simSlotName){
+            intent.putExtra(s,slot);
+        }
         this.reactContext.startActivity(intent);
     }
 }
