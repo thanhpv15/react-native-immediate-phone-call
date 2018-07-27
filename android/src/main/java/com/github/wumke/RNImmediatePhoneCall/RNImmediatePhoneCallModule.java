@@ -14,11 +14,15 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import android.telecom.PhoneAccountHandle;
+import android.telecom.TelecomManager;
+import java.util.List;
 
 public class RNImmediatePhoneCallModule extends ReactContextBaseJavaModule {
 
     ReactApplicationContext reactContext;
     AlarmManager alarmManager;
+    private List<PhoneAccountHandle> phoneAccountHandleList;
     private final static String simSlotName[] = {
             "extra_asus_dial_use_dualsim",
             "com.android.phone.extra.slot",
@@ -59,6 +63,18 @@ public class RNImmediatePhoneCallModule extends ReactContextBaseJavaModule {
         for (String s : simSlotName){
             intent.putExtra(s,slot);
         }
+        
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            intent.putExtra("Cdma_Supp", true);
+            TelecomManager telecomManager = (TelecomManager) this.reactContext.getSystemService(Context.TELECOM_SERVICE);
+            phoneAccountHandleList = telecomManager.getCallCapablePhoneAccounts();
+            if (phoneAccountHandleList != null && phoneAccountHandleList.size() > 0)
+            {
+                intent.putExtra("android.telecom.extra.PHONE_ACCOUNT_HANDLE",
+                        phoneAccountHandleList.get(slot));
+            }
+        }
+
         this.reactContext.startActivity(intent);
     }
 }
