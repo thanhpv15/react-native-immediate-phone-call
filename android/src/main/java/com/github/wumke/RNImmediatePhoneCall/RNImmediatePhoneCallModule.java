@@ -68,11 +68,11 @@ public class RNImmediatePhoneCallModule extends ReactContextBaseJavaModule {
             intent.putExtra("Cdma_Supp", true);
             TelecomManager telecomManager = (TelecomManager) this.reactContext.getSystemService(Context.TELECOM_SERVICE);
             phoneAccountHandleList = telecomManager.getCallCapablePhoneAccounts();
-            if (phoneAccountHandleList != null && phoneAccountHandleList.size() > 0)
-            {
-                intent.putExtra("android.telecom.extra.PHONE_ACCOUNT_HANDLE",
-                        phoneAccountHandleList.get(slot));
+            if (phoneAccountHandleList == null || phoneAccountHandleList.size() == 0) {
+                return;
             }
+            int index = phoneAccountHandleList.size() == 1 ? 0 : slot;
+            intent.putExtra("android.telecom.extra.PHONE_ACCOUNT_HANDLE", phoneAccountHandleList.get(index));
         }
 
         this.reactContext.startActivity(intent);
